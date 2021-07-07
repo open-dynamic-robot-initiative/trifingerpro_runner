@@ -138,17 +138,21 @@ class SimulationBackendRunner(BaseBackendRunner):
             "run",
             "--cleanenv",
             "--contain",
-            "--nv" if self.config.singularity_nv else "",
+            "--nv" if self.config.singularity_nv else None,
             "-B",
             "/dev",
             self.config.singularity_backend_image,
             backend_rosrun_cmd,
         ]
+
+        run_backend_cmd = [c for c in run_backend_cmd
+                           if c is not None]
+        
         self.logger.debug(" ".join(run_backend_cmd))
         self._proc = subprocess.Popen(
             run_backend_cmd, stderr=subprocess.STDOUT
         )
-
+        
     def is_running(self):
         self.returncode = self._proc.poll()
         return self.returncode is None
